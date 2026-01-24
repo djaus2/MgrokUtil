@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MgrokUtil", "MgrokUtil.csproj", "{D8516466-17A6-C614-9382-D7DF108A050C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8516466-17A6-C614-9382-D7DF108A050C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8516466-17A6-C614-9382-D7DF108A050C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8516466-17A6-C614-9382-D7DF108A050C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8516466-17A6-C614-9382-D7DF108A050C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8FAE8E89-1170-4ECA-85E6-592562CAC7B9}
+	EndGlobalSection
+EndGlobal
