@@ -40,8 +40,20 @@ public partial class App : Application
             }
         }
 
-        var settings = preliminary.ClearSettings ? new AppSettings(null, null) : AppSettingsStore.Load();
+        var settings = preliminary.ClearSettings ? new AppSettings(null, null, null) : AppSettingsStore.Load();
         var options = CommandLineOptions.Parse(e.Args, settings);
+
+        var effectivePort = settings.Port ?? 4242;
+        var yamlPort = NgrokYamlUpdater.TryReadPortFromExistingTcpTunnels(options.Path);
+        if (yamlPort.HasValue)
+        {
+            effectivePort = yamlPort.Value;
+        }
+
+        if (options.Port.HasValue)
+        {
+            effectivePort = options.Port.Value;
+        }
 
         if (!NetworkValidator.TryValidateLocalNetwork(options.Network, out var networkError))
         {
@@ -130,7 +142,7 @@ public partial class App : Application
 
             try
             {
-                NgrokYamlUpdater.UpdateTcpTunnelsFromIpBase(options.Path, options.Network, ports, append);
+                NgrokYamlUpdater.UpdateTcpTunnelsFromIpBase(options.Path, options.Network, ports, append, effectivePort);
             }
             catch (Exception ex)
             {
@@ -174,7 +186,7 @@ public partial class App : Application
 
         try
         {
-            AppSettingsStore.Save(new AppSettings(vm.Path, vm.AuthToken));
+            AppSettingsStore.Save(new AppSettings(vm.Path, vm.AuthToken, effectivePort));
         }
         catch
         {
@@ -203,6 +215,10 @@ public partial class App : Application
                "      Path to ngrok.yml ('.yml' is appended if missing).\r\n" +
                "      If a single positional argument is provided, it is treated as the path.\r\n" +
                "\r\n" +
+               "  --port=<port>, -t=<port>\r\n" +
+               "      Default: 4242.\r\n" +
+               "      If existing tunnels contain an addr port, that port is used unless overridden.\r\n" +
+               "\r\n" +
                "  --authtoken=<token>, -a=<token>\r\n" +
                "      Optional ngrok authtoken (must be 49 chars, [A-Za-z0-9_]).\r\n" +
                "      If the config file is missing, providing a valid authtoken will create it.\r\n" +
@@ -212,8 +228,8 @@ public partial class App : Application
                "      Default: 192.168.0.0\r\n" +
                "\r\n" +
                "  --ipBase=<csv>, -i=<csv>\r\n" +
-               "      CSV of ports/ids (1..234).\r\n" +
-               "      If value starts with '+', merges with existing tcp<port> tunnels; otherwise replaces them.\r\n";
+               "      CSV of IP last-octets (1..234).\r\n" +
+               "      If value starts with '+', merges with existing tcp<ip> tunnels; otherwise replaces them.\r\n";
     }
 }
 

@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace MgrokUtil;
 
-internal sealed record AppSettings(string? Path, string? AuthToken);
+internal sealed record AppSettings(string? Path, string? AuthToken, int? Port);
 
 internal static class AppSettingsStore
 {
@@ -28,18 +28,18 @@ internal static class AppSettingsStore
         var path = SettingsPath();
         if (!File.Exists(path))
         {
-            return new AppSettings(null, null);
+            return new AppSettings(null, null, null);
         }
 
         try
         {
             var json = File.ReadAllText(path);
             var settings = JsonSerializer.Deserialize<AppSettings>(json);
-            return settings ?? new AppSettings(null, null);
+            return settings ?? new AppSettings(null, null, null);
         }
         catch
         {
-            return new AppSettings(null, null);
+            return new AppSettings(null, null, null);
         }
     }
 

@@ -9,7 +9,7 @@ namespace MgrokUtil;
 
 internal static class NgrokYamlUpdater
 {
-    public static void UpdateTcpTunnelsFromIpBase(string path, string network, IReadOnlyList<int> ipBasePorts, bool append)
+    public static void UpdateTcpTunnelsFromIpBase(string path, string network, IReadOnlyList<int> ipBaseIps, bool append, int port)
     {
         if (!IPAddress.TryParse(network, out var networkIp) || networkIp.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
         {
@@ -17,8 +17,7 @@ internal static class NgrokYamlUpdater
         }
 
         var bytes = networkIp.GetAddressBytes();
-        var hostIp = new IPAddress(new byte[] { bytes[0], bytes[1], bytes[2], 11 });
-        var host = hostIp.ToString();
+        var prefix = $"{bytes[0]}.{bytes[1]}.{bytes[2]}";
 
         var yaml = new YamlStream();
         using (var reader = new StreamReader(path))
@@ -40,8 +39,8 @@ internal static class NgrokYamlUpdater
 
         var tunnelsNode = GetOrCreateMapping(root, "tunnels");
 
-        var existingTcpPorts = ExtractExistingTcpPorts(tunnelsNode);
-        var merged = append ? existingTcpPorts.Concat(ipBasePorts) : ipBasePorts;
+        var existingTcpIps = ExtractExistingTcpPorts(tunnelsNode);
+        var merged = append ? existingTcpIps.Concat(ipBaseIps) : ipBaseIps;
 
         var finalPorts = merged
             .Where(p => p > 0 && p < 235)
@@ -51,13 +50,13 @@ internal static class NgrokYamlUpdater
 
         RemoveExistingTcpTunnels(tunnelsNode);
 
-        foreach (var port in finalPorts)
+        foreach (var ip in finalPorts)
         {
-            var tunnelKey = $"tcp{port}";
+            var tunnelKey = $"tcp{ip}";
             var tunnelMap = new YamlMappingNode
             {
                 { "proto", "tcp" },
-                { "addr", $"{host}:{port}" },
+                { "addr", $"{prefix}.{ip}:{port}" },
             };
 
             tunnelsNode.Children[new YamlScalarNode(tunnelKey)] = tunnelMap;
@@ -79,6 +78,84 @@ internal static class NgrokYamlUpdater
                 File.WriteAllText(path, trimmed + Environment.NewLine);
             }
         }
+    }
+
+    public static int? TryReadPortFromExistingTcpTunnels(string path)
+    {
+        if (!File.Exists(path))
+        {
+            return null;
+        }
+
+        var yaml = new YamlStream();
+        try
+        {
+            using var reader = new StreamReader(path);
+            yaml.Load(reader);
+        }
+        catch
+        {
+            return null;
+        }
+
+        if (yaml.Documents.Count == 0)
+        {
+            return null;
+        }
+
+        if (yaml.Documents[0].RootNode is not YamlMappingNode root)
+        {
+            return null;
+        }
+
+        if (!root.Children.TryGetValue(new YamlScalarNode("tunnels"), out var tunnelsNode) || tunnelsNode is not YamlMappingNode tunnels)
+        {
+            return null;
+        }
+
+        foreach (var kvp in tunnels.Children)
+        {
+            if (kvp.Key is not YamlScalarNode keyScalar)
+            {
+                continue;
+            }
+
+            var key = keyScalar.Value ?? string.Empty;
+            if (!key.StartsWith("tcp", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (kvp.Value is not YamlMappingNode tunnelMap)
+            {
+                continue;
+            }
+
+            if (!tunnelMap.Children.TryGetValue(new YamlScalarNode("addr"), out var addrNode))
+            {
+                continue;
+            }
+
+            var addr = (addrNode as YamlScalarNode)?.Value;
+            if (string.IsNullOrWhiteSpace(addr))
+            {
+                continue;
+            }
+
+            var idx = addr.LastIndexOf(':');
+            if (idx < 0 || idx == addr.Length - 1)
+            {
+                continue;
+            }
+
+            var portText = addr[(idx + 1)..];
+            if (int.TryParse(portText, out var parsedPort))
+            {
+                return parsedPort;
+            }
+        }
+
+        return null;
     }
 
     private static List<int> ExtractExistingTcpPorts(YamlMappingNode tunnelsNode)

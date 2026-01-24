@@ -1,6 +1,6 @@
 namespace MgrokUtil;
 
-internal sealed record CommandLineOptions(string Path, string? AuthToken, string Network, string? IpBase, bool ClearSettings, bool ShowHelp)
+internal sealed record CommandLineOptions(string Path, string? AuthToken, string Network, string? IpBase, int? Port, bool ClearSettings, bool ShowHelp)
 {
     public static CommandLineOptions Parse(string[] args)
     {
@@ -13,6 +13,7 @@ internal sealed record CommandLineOptions(string Path, string? AuthToken, string
         string? authToken = null;
         string? network = null;
         string? ipBase = null;
+        int? port = null;
         var clearSettings = false;
         var showHelp = false;
 
@@ -43,6 +44,12 @@ internal sealed record CommandLineOptions(string Path, string? AuthToken, string
                         break;
                     case "ipBase":
                         ipBase = value;
+                        break;
+                    case "port":
+                        if (int.TryParse(value, out var parsedPort))
+                        {
+                            port = parsedPort;
+                        }
                         break;
                 }
 
@@ -95,6 +102,38 @@ internal sealed record CommandLineOptions(string Path, string? AuthToken, string
             if (string.Equals(arg, "-h", StringComparison.OrdinalIgnoreCase))
             {
                 showHelp = true;
+                continue;
+            }
+
+            if (arg.StartsWith("--port=", StringComparison.OrdinalIgnoreCase))
+            {
+                var value = arg["--port=".Length..].Trim().Trim('"');
+                if (int.TryParse(value, out var parsed))
+                {
+                    port = parsed;
+                }
+                continue;
+            }
+
+            if (string.Equals(arg, "--port", StringComparison.OrdinalIgnoreCase))
+            {
+                pendingKey = "port";
+                continue;
+            }
+
+            if (arg.StartsWith("-t=", StringComparison.OrdinalIgnoreCase))
+            {
+                var value = arg["-t=".Length..].Trim().Trim('"');
+                if (int.TryParse(value, out var parsed))
+                {
+                    port = parsed;
+                }
+                continue;
+            }
+
+            if (string.Equals(arg, "-t", StringComparison.OrdinalIgnoreCase))
+            {
+                pendingKey = "port";
                 continue;
             }
 
@@ -191,6 +230,7 @@ internal sealed record CommandLineOptions(string Path, string? AuthToken, string
 
         path ??= baseSettings?.Path ?? NgrokDefaults.DefaultConfigPath();
         authToken ??= baseSettings?.AuthToken;
+        port ??= baseSettings?.Port;
 
         if (!path.EndsWith(".yml", StringComparison.OrdinalIgnoreCase))
         {
@@ -199,6 +239,6 @@ internal sealed record CommandLineOptions(string Path, string? AuthToken, string
 
         network ??= "192.168.0.0";
 
-        return new CommandLineOptions(path, authToken, network, ipBase, clearSettings, showHelp);
+        return new CommandLineOptions(path, authToken, network, ipBase, port, clearSettings, showHelp);
     }
 }
