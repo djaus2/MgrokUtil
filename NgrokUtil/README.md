@@ -1,5 +1,13 @@
 # mgrokutil
+WPF Console app to generate an ngrok TCP tunnels config file. 
 
+- Generate a ngrok.yml with the app.
+- Noramlly leave the path as default so ngrok can easily find it.
+- And normally leave the network 192.168.0.0 as local as default
+- You will need your authtoken, generated as part of the setup.
+- For ngrok setup see [Softata: ngrok update](https://davidjones.sportronics.com.au/softata/Softata-ngrok_update-softata.html)
+  - An update page coming specifically for this
+  
 
 ```
 ---------------------------
@@ -29,5 +37,15 @@ MgrokUtil command line options:
 ---------------------------
 ```
 <img width="1578" height="946" alt="image" src="https://github.com/user-attachments/assets/77766ec3-2678-4dd7-bf62-37cacf2bd35c" />
+
+Once generated run with 
+
+```
+ngrok start --all
+```
+Or you can just name the tunnels eg ```ngrot start tcp11``` etc
+
+<img width="2350" height="818" alt="image" src="https://github.com/user-attachments/assets/47081840-8fde-4a6f-b584-f0f00b50d3d5" />
+
 
 
