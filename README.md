@@ -11,6 +11,8 @@
   
 
 ```
+
+## Ngrokutil
 ---------------------------
 MgrokUtil Help
 ---------------------------
@@ -38,6 +40,11 @@ MgrokUtil command line options:
 ---------------------------
 ```
 <img width="1578" height="946" alt="image" src="https://github.com/user-attachments/assets/77766ec3-2678-4dd7-bf62-37cacf2bd35c" />
+
+## NgrokTunnelsConfig
+
+- App is present need to document.
+- For now just make chanes and save.
 
 Once generated run with 
 
