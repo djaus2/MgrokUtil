@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/obj/Debug/net10.0-windows/NgrokTunnelsConfig/App.g.i.cs
+/obj/Debug/net10.0-windows/NgrokTunnelsConfig/MainWindow.g.i.cs
+/obj/Debug/net10.0-windows/NgrokUtil/App.g.i.cs
+/obj/Debug/net10.0-windows/NgrokUtil/MainWindow.g.i.cs
