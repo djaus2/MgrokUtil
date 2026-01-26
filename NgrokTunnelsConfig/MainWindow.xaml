@@ -1,0 +1,81 @@
+﻿<Window x:Class="NgrokTunnelsConfig.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NgrokTunnelsConfig"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontWeight="SemiBold" Text="* Config path:" />
+            <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,8,6" Text="{Binding Path, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Grid.Row="0" Grid.Column="2" Margin="0,0,0,6" Padding="10,4" Content="Browse" Click="Browse_Click" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontWeight="SemiBold" Text="* Auth token:" />
+            <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,6" Text="{Binding AuthToken, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontWeight="SemiBold" Text="* Network:" />
+            <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,6" Text="{Binding Network, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontWeight="SemiBold" Text="IpBase:" />
+            <TextBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,6" Text="{Binding IpBase, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontWeight="SemiBold" Text="Port:" />
+            <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,6" Width="120" HorizontalAlignment="Left" Text="{Binding PortText, UpdateSourceTrigger=PropertyChanged}" />
+
+            <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,4,0,0">
+                <Button Padding="10,4" Margin="0,0,6,0" Content="Load" Click="Load_Click" />
+                <Button Padding="10,4" Margin="0,0,6,0" Content="Apply IpBase" Click="ApplyIpBase_Click" />
+                <Button Padding="10,4" Margin="0,0,6,0" Content="Save Config" Click="SaveConfig_Click" />
+                <Button Padding="10,4" Margin="0,0,6,0" Content="Persist *Settings" Click="SaveSettings_Click" />
+                <Button Padding="10,4" Margin="0,0,6,0" Content="Clear *Settings" Click="ClearSettings_Click" />
+                <Button Padding="10,4" Content="Help" Click="Help_Click" />
+            </StackPanel>
+
+            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,6,0,0" Foreground="DarkRed" Text="{Binding Error}" TextWrapping="Wrap" />
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="10,0,10,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Raw YAML" Grid.Column="0" Margin="0,0,5,0">
+                <TextBox Text="{Binding RawYaml}" IsReadOnly="True" FontFamily="Consolas" TextWrapping="NoWrap"
+                         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+            </GroupBox>
+
+            <GroupBox Header="Elements" Grid.Column="1" Margin="5,0,0,0">
+                <TreeView ItemsSource="{Binding RootNodes}">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding}" />
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</Window>
