@@ -9,12 +9,33 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="10">
+        <Menu Grid.Row="0">
+            <MenuItem Header="File">
+                <MenuItem Header="Load" Click="MenuFileLoad_Click" />
+                <MenuItem Header="Save" Click="MenuFileSave_Click" />
+            </MenuItem>
+
+            <MenuItem Header="Tunnels">
+                <MenuItem Header="Add" Click="MenuTunnelsAdd_Click" />
+                <MenuItem Header="Replace" Click="MenuTunnelsReplace_Click" />
+                <MenuItem Header="Remove" Click="MenuTunnelsRemove_Click" />
+                <MenuItem Header="Clear" Click="MenuTunnelsClear_Click" />
+            </MenuItem>
+
+            <MenuItem Header="Settings">
+                <MenuItem Header="Save" Click="MenuSettingsSave_Click" />
+                <MenuItem Header="Clear" Click="MenuSettingsClear_Click" />
+            </MenuItem>
+
+            <MenuItem Header="Help" Click="MenuHelp_Click" />
+        </Menu>
+
+        <Grid Grid.Row="1" Margin="10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -44,19 +65,10 @@
             <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontWeight="SemiBold" Text="Port:" />
             <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,6" Width="120" HorizontalAlignment="Left" Text="{Binding PortText, UpdateSourceTrigger=PropertyChanged}" />
 
-            <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,4,0,0">
-                <Button Padding="10,4" Margin="0,0,6,0" Content="Load" Click="Load_Click" />
-                <Button Padding="10,4" Margin="0,0,6,0" Content="Apply IpBase" Click="ApplyIpBase_Click" />
-                <Button Padding="10,4" Margin="0,0,6,0" Content="Save Config" Click="SaveConfig_Click" />
-                <Button Padding="10,4" Margin="0,0,6,0" Content="Persist *Settings" Click="SaveSettings_Click" />
-                <Button Padding="10,4" Margin="0,0,6,0" Content="Clear *Settings" Click="ClearSettings_Click" />
-                <Button Padding="10,4" Content="Help" Click="Help_Click" />
-            </StackPanel>
-
-            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,6,0,0" Foreground="DarkRed" Text="{Binding Error}" TextWrapping="Wrap" />
+            <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,6,0,0" Foreground="DarkRed" Text="{Binding Error}" TextWrapping="Wrap" />
         </Grid>
 
-        <Grid Grid.Row="1" Margin="10,0,10,10">
+        <Grid Grid.Row="2" Margin="10,0,10,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />

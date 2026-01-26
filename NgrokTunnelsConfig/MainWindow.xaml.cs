@@ -63,6 +63,11 @@ public partial class MainWindow : Window
 
     private void ApplyIpBase_Click(object sender, RoutedEventArgs e)
     {
+        ApplyIpBaseInternal(append: false);
+    }
+
+    private void ApplyIpBaseInternal(bool append)
+    {
         Vm.Error = null;
 
         try
@@ -86,11 +91,10 @@ public partial class MainWindow : Window
             }
 
             var ipBaseText = Vm.IpBase.Trim();
-            var append = false;
             if (ipBaseText.StartsWith("+", StringComparison.Ordinal))
             {
-                append = true;
-                ipBaseText = ipBaseText[1..].Trim();
+                Vm.Error = "IpBase should not include '+'; use Tunnels -> Add instead.";
+                return;
             }
 
             if (!IpBaseValidator.TryParse(ipBaseText, out var ipBaseIps, out var ipBaseError))
@@ -180,6 +184,71 @@ public partial class MainWindow : Window
     {
         MessageBox.Show(AppHelpText.GetHelpText(), "NgrokTunnelsConfig Help", MessageBoxButton.OK, MessageBoxImage.Information);
     }
+
+    private void MenuFileLoad_Click(object sender, RoutedEventArgs e) => Load_Click(sender, e);
+
+    private void MenuFileSave_Click(object sender, RoutedEventArgs e) => SaveConfig_Click(sender, e);
+
+    private void MenuTunnelsAdd_Click(object sender, RoutedEventArgs e) => ApplyIpBaseInternal(append: true);
+
+    private void MenuTunnelsReplace_Click(object sender, RoutedEventArgs e) => ApplyIpBaseInternal(append: false);
+
+    private void MenuTunnelsRemove_Click(object sender, RoutedEventArgs e)
+    {
+        Vm.Error = null;
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(Vm.IpBase))
+            {
+                Vm.Error = "IpBase is empty.";
+                return;
+            }
+
+            var ipBaseText = Vm.IpBase.Trim();
+            if (ipBaseText.StartsWith("+", StringComparison.Ordinal))
+            {
+                Vm.Error = "IpBase should not include '+'; use Tunnels -> Add instead.";
+                return;
+            }
+
+            if (!IpBaseValidator.TryParse(ipBaseText, out var ipBaseIps, out var ipBaseError))
+            {
+                Vm.Error = ipBaseError ?? "Invalid ipBase.";
+                return;
+            }
+
+            var baseYaml = GetCurrentYamlText();
+            var updatedYaml = NgrokYamlUpdater.RemoveTcpTunnelsFromIpBaseYaml(baseYaml, ipBaseIps);
+            SetPreviewYaml(updatedYaml);
+        }
+        catch (Exception ex)
+        {
+            Vm.Error = ex.Message;
+        }
+    }
+
+    private void MenuTunnelsClear_Click(object sender, RoutedEventArgs e)
+    {
+        Vm.Error = null;
+
+        try
+        {
+            var baseYaml = GetCurrentYamlText();
+            var updatedYaml = NgrokYamlUpdater.ClearTcpTunnelsYaml(baseYaml);
+            SetPreviewYaml(updatedYaml);
+        }
+        catch (Exception ex)
+        {
+            Vm.Error = ex.Message;
+        }
+    }
+
+    private void MenuSettingsSave_Click(object sender, RoutedEventArgs e) => SaveSettings_Click(sender, e);
+
+    private void MenuSettingsClear_Click(object sender, RoutedEventArgs e) => ClearSettings_Click(sender, e);
+
+    private void MenuHelp_Click(object sender, RoutedEventArgs e) => Help_Click(sender, e);
 
     private static void EnsureConfigFileExists(string path, string? authToken)
     {

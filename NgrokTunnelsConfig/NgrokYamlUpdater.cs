@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using YamlDotNet.Core.Events;
 using YamlDotNet.RepresentationModel;
 
 namespace NgrokTunnelsConfig;
@@ -37,7 +38,10 @@ internal static class NgrokYamlUpdater
             yaml.Documents[0] = new YamlDocument(root);
         }
 
+        root.Style = YamlDotNet.Core.Events.MappingStyle.Block;
+
         var tunnelsNode = GetOrCreateMapping(root, "tunnels");
+        tunnelsNode.Style = YamlDotNet.Core.Events.MappingStyle.Block;
 
         var existingTcpIps = ExtractExistingTcpPorts(tunnelsNode);
         var merged = append ? existingTcpIps.Concat(ipBaseIps) : ipBaseIps;
@@ -59,8 +63,81 @@ internal static class NgrokYamlUpdater
                 { "addr", $"{prefix}.{ip}:{port}" },
             };
 
+            tunnelMap.Style = YamlDotNet.Core.Events.MappingStyle.Block;
+
             tunnelsNode.Children[new YamlScalarNode(tunnelKey)] = tunnelMap;
         }
+
+        using var writer = new StringWriter();
+        yaml.Save(writer, assignAnchors: false);
+        return RemoveTrailingDocumentEndMarker(writer.ToString());
+    }
+
+    public static string RemoveTcpTunnelsFromIpBaseYaml(string yamlText, IReadOnlyList<int> ipBaseIps)
+    {
+        var yaml = new YamlStream();
+        using (var reader = new StringReader(yamlText ?? string.Empty))
+        {
+            yaml.Load(reader);
+        }
+
+        if (yaml.Documents.Count == 0)
+        {
+            yaml.Documents.Add(new YamlDocument(new YamlMappingNode()));
+        }
+
+        var root = yaml.Documents[0].RootNode as YamlMappingNode;
+        if (root is null)
+        {
+            root = new YamlMappingNode();
+            yaml.Documents[0] = new YamlDocument(root);
+        }
+
+        root.Style = YamlDotNet.Core.Events.MappingStyle.Block;
+
+        var tunnelsNode = GetOrCreateMapping(root, "tunnels");
+        tunnelsNode.Style = YamlDotNet.Core.Events.MappingStyle.Block;
+
+        var portsToRemove = ipBaseIps
+            .Where(p => p > 0 && p < 235)
+            .Distinct()
+            .ToList();
+
+        foreach (var ip in portsToRemove)
+        {
+            tunnelsNode.Children.Remove(new YamlScalarNode($"tcp{ip}"));
+        }
+
+        using var writer = new StringWriter();
+        yaml.Save(writer, assignAnchors: false);
+        return RemoveTrailingDocumentEndMarker(writer.ToString());
+    }
+
+    public static string ClearTcpTunnelsYaml(string yamlText)
+    {
+        var yaml = new YamlStream();
+        using (var reader = new StringReader(yamlText ?? string.Empty))
+        {
+            yaml.Load(reader);
+        }
+
+        if (yaml.Documents.Count == 0)
+        {
+            yaml.Documents.Add(new YamlDocument(new YamlMappingNode()));
+        }
+
+        var root = yaml.Documents[0].RootNode as YamlMappingNode;
+        if (root is null)
+        {
+            root = new YamlMappingNode();
+            yaml.Documents[0] = new YamlDocument(root);
+        }
+
+        root.Style = YamlDotNet.Core.Events.MappingStyle.Block;
+
+        var tunnelsNode = GetOrCreateMapping(root, "tunnels");
+        tunnelsNode.Style = YamlDotNet.Core.Events.MappingStyle.Block;
+        RemoveExistingTcpTunnels(tunnelsNode);
 
         using var writer = new StringWriter();
         yaml.Save(writer, assignAnchors: false);
@@ -377,6 +454,18 @@ internal static class NgrokYamlUpdater
             }
         }
 
-        return trimmed + Environment.NewLine;
+        var normalized = NormalizeTunnelsEmptyMap(trimmed);
+        return normalized + Environment.NewLine;
+    }
+
+    private static string NormalizeTunnelsEmptyMap(string yamlText)
+    {
+        var text = yamlText ?? string.Empty;
+
+        text = text.Replace("tunnels: {}", "tunnels:", StringComparison.Ordinal);
+        text = text.Replace("tunnels: {}\r\n", "tunnels:\r\n", StringComparison.Ordinal);
+        text = text.Replace("tunnels: {}\n", "tunnels:\n", StringComparison.Ordinal);
+
+        return text;
     }
 }
