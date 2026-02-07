@@ -1,6 +1,6 @@
 # Ngrokutil and NgrokTunnelsConfig apps
-- WPF Console app to generate an ngrok TCP tunnels config file. 
-- And Form based WPF app to do same.
+- `Ngrokutil` A WPF Console app to generate an ngrok TCP tunnels config file. 
+- And `NgrokTunnelsConfig` A WPF Form based  app to do same.
 ---
 - Generate a ngrok.yml with the app.
 - Noramlly leave the path as default so ngrok can easily find it.
