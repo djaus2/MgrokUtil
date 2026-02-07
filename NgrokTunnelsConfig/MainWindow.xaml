@@ -20,12 +20,13 @@
             </MenuItem>
 
             <MenuItem Header="Tunnels">
-                <MenuItem Header="Start Tunnelling" Click="MenuTunnelsStart_Click" />
-                <MenuItem Header="Capture Tunnelling" Click="MenuTunnelsCapture_Click" />
-                <MenuItem Header="Select Tunnel" Click="MenuTunnelSelect_Click" />
-                <MenuItem Header="Stop Tunnelling" Click="MenuTunnelsStopNgrok_Click" />
+                <MenuItem Header="Start" Click="MenuTunnelsStart_Click" />
+                <MenuItem Header="Capture" Click="MenuTunnelsCapture_Click" />
+                <MenuItem Header="Select" Click="MenuTunnelSelect_Click" />
+                <MenuItem Header="Stop" Click="MenuTunnelsStopNgrok_Click" />
                 <MenuItem Header="Stop ngrok.exe" Click="MenuTunnelsStopNgrokExe_Click" />
-                <MenuItem Header="Add" Click="MenuTunnelsAdd_Click" />
+                <Separator />
+                <MenuItem Header="Add New" Click="MenuTunnelsAdd_Click" />
                 <MenuItem Header="Replace" Click="MenuTunnelsReplace_Click" />
                 <MenuItem Header="Remove" Click="MenuTunnelsRemove_Click" />
                 <MenuItem Header="Clear" Click="MenuTunnelsClear_Click" />

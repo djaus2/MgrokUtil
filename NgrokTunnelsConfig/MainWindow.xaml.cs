@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shapes;
 
 namespace NgrokTunnelsConfig;
 
@@ -144,7 +145,7 @@ public partial class MainWindow : Window
                 Vm.Path += ".yml";
             }
 
-            var dir = Path.GetDirectoryName(Vm.Path);
+            var dir = System.IO.Path.GetDirectoryName(Vm.Path);
             if (!string.IsNullOrWhiteSpace(dir))
             {
                 Directory.CreateDirectory(dir);
@@ -273,7 +274,7 @@ public partial class MainWindow : Window
             throw new InvalidOperationException($"Config not found: {path}\r\nProvide an authtoken to create it.");
         }
 
-        var dir = Path.GetDirectoryName(path);
+        var dir = System.IO.Path.GetDirectoryName(path);
         if (!string.IsNullOrWhiteSpace(dir))
         {
             Directory.CreateDirectory(dir);
@@ -561,10 +562,8 @@ public partial class MainWindow : Window
                 if (idx < 0)
                     continue;
 
-                var end = line.IndexOf(' ', idx);
-                var token = end > idx ? line.Substring(idx, end - idx) : line.Substring(idx);
+                var token = line.Substring(idx); 
                 token = token.Trim();
-
                 if (!string.IsNullOrEmpty(token) && !results.Contains(token, StringComparer.OrdinalIgnoreCase))
                 {
                     results.Add(token);
@@ -580,6 +579,7 @@ public partial class MainWindow : Window
             var csv = string.Join(",", results);
             Clipboard.SetText(csv);
             Vm.Error = $"Captured {results.Count} forwarding(s) to clipboard.";
+            MenuTunnelSelect_Click(sender, e);
         }
         catch (Exception ex)
         {
@@ -673,7 +673,11 @@ public partial class MainWindow : Window
             var result = dlg.ShowDialog();
             if (result == true && listBox.SelectedItem is string selected)
             {
-                Clipboard.SetText(selected);
+                int idx = 0;
+                var end = selected.IndexOf(' ', idx);
+                var token = end > idx ? selected.Substring(idx,end) : selected.Substring(idx);
+                token = token.Trim();
+                Clipboard.SetText(token);
                 Vm.Error = "Selected tunnel copied to clipboard.";
             }
             else
