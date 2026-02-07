@@ -70,7 +70,7 @@ Or you can just name the tunnels eg ```ngrot start tcp11``` etc
 tcp://0.tcp.au.ngrok.io:13964 -> 192.168.0.5:4242
 tcp://0.tcp.au.ngrok.io:18348 -> 192.168.0.4:4242
 ```
-Can then select and get eg `tcp://0.tcp.au.ngrok.io:13964' on Clipboard.
+Can then select and get eg `tcp://0.tcp.au.ngrok.io:13964` on Clipboard.
 - Run `Tunnels.Stop ngrok.exe` before app exit.
 
 
