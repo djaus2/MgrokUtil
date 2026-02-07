@@ -39,9 +39,8 @@ MgrokUtil command line options:
       If value starts with '+', merges with existing tcp<port> tunnels; otherwise replaces them.
 ---------------------------
 ```
-<img width="1578" height="946" alt="image" src="https://github.com/user-attachments/assets/77766ec3-2678-4dd7-bf62-37cacf2bd35c" />
 
----
+
 
 ## NgrokTunnelsConfig
 
@@ -57,10 +56,15 @@ ngrok start --all
 ```
 Or you can just name the tunnels eg ```ngrot start tcp11``` etc
 
-<img width="2350" height="818" alt="image" src="https://github.com/user-attachments/assets/47081840-8fde-4a6f-b584-f0f00b50d3d5" />
+<img width="800" height="463" alt="image" src="https://github.com/user-attachments/assets/a4994ad5-3fcb-43b6-ac0d-2d58dab26376" />
+
 
 ### Update:
-- Can new orchestrate `ngrok start --all` from NgrokTunnelsConfig
+- Can new orchestrate `ngrok start --all` from `Tunnels` menu:
+  - Start _Run `ngrok start --all`_
+    - Then copy the Shell text.
+  - Capture _Get list of tunnels from text on Clipboard._
+  - Select _From list._
 - Get list of tunnels to choose from such as
 ```
 tcp://0.tcp.au.ngrok.io:13964 -> 192.168.0.5:4242
