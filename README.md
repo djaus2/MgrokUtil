@@ -45,10 +45,10 @@ MgrokUtil command line options:
 
 ## NgrokTunnelsConfig
 
-- App is present need to document.
-- For now just make chanes and save.
+- App is present, need to document.
+- For now just make changes and save.
 
----
+
 
 Once generated run with 
 
@@ -58,6 +58,15 @@ ngrok start --all
 Or you can just name the tunnels eg ```ngrot start tcp11``` etc
 
 <img width="2350" height="818" alt="image" src="https://github.com/user-attachments/assets/47081840-8fde-4a6f-b584-f0f00b50d3d5" />
+
+### Update:
+- Can new orchestrate `ngrok start --all` from NgrokTunnelsConfig
+- Get list of tunnels to choose from such as
+```
+tcp://0.tcp.au.ngrok.io:13964 -> 192.168.0.5:4242
+tcp://0.tcp.au.ngrok.io:18348 -> 192.168.0.4:4242
+```
+Can then select and get eg `tcp://0.tcp.au.ngrok.io:13964' on Clipboard.
 
 
 
