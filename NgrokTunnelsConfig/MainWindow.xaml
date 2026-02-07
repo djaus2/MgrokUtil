@@ -17,6 +17,8 @@
             <MenuItem Header="File">
                 <MenuItem Header="Load" Click="MenuFileLoad_Click" />
                 <MenuItem Header="Save" Click="MenuFileSave_Click" />
+                <Separator />
+                <MenuItem Header="Exit" Click="MenuFileExit_Click" />
             </MenuItem>
 
             <MenuItem Header="Tunnels">

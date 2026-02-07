@@ -690,4 +690,11 @@ public partial class MainWindow : Window
             Vm.Error = ex.Message;
         }
     }
+
+    private void MenuFileExit_Click(object sender, RoutedEventArgs e)
+    {
+        MenuTunnelsStopNgrok_Click(sender, e);
+        MenuTunnelsStopNgrokExe_Click(sender, e);
+        Application.Current.Shutdown();
+    }
 }
