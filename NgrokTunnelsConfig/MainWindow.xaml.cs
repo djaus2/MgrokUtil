@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Shapes;
 
 namespace NgrokTunnelsConfig;
 
@@ -613,51 +611,43 @@ public partial class MainWindow : Window
                 MinHeight = 200
             };
 
-            listBox.MouseDoubleClick += (s, a) =>
+            foreach (var t in Tunnels)
+                listBox.Items.Add(t);
+
+            // make Enter work immediately
+            listBox.SelectedIndex = 0;
+            listBox.Focus();
+
+            void CopySelectedAndClose()
             {
-                if (listBox.SelectedItem is string sel)
-                {
-                    Clipboard.SetText(sel);
-                    Vm.Error = "Selected tunnel copied to clipboard.";
-                    dlg.DialogResult = true;
-                    dlg.Close();
-                }
-            };
+                if (!(listBox.SelectedItem is string sel))
+                    return;
+
+                // extract substring from start up to first space
+                var idx = 0;
+                var end = sel.IndexOf(' ', idx);
+                var token = end > idx ? sel.Substring(idx, end - idx) : sel.Substring(idx);
+                token = token.Trim();
+
+                Clipboard.SetText(token);
+                Vm.Error = "Selected tunnel copied to clipboard.";
+                dlg.DialogResult = true;
+                dlg.Close();
+            }
+
+            listBox.MouseDoubleClick += (s, a) => CopySelectedAndClose();
             listBox.KeyDown += (s, a) =>
             {
                 if (a is KeyEventArgs ke && ke.Key == Key.Enter)
                 {
-                    if (listBox.SelectedItem is string sel)
-                    {
-                        Clipboard.SetText(sel);
-                        Vm.Error = "Selected tunnel copied to clipboard.";
-                        dlg.DialogResult = true;
-                        dlg.Close();
-                    }
+                    CopySelectedAndClose();
                 }
             };
-
-            foreach (var t in Tunnels)
-                listBox.Items.Add(t);
 
             var ok = new System.Windows.Controls.Button { Content = "OK", IsDefault = true, Width = 75, Margin = new Thickness(5) };
             var cancel = new System.Windows.Controls.Button { Content = "Cancel", IsCancel = true, Width = 75, Margin = new Thickness(5) };
-            ok.Click += (s, a) =>
-            {
-                if (listBox.SelectedItem is string sel)
-                {
-                    Clipboard.SetText(sel);
-                    Vm.Error = "Selected tunnel copied to clipboard.";
-                    dlg.DialogResult = true;
-                }
-                else
-                {
-                    Vm.Error = "No item selected.";
-                    dlg.DialogResult = false;
-                }
 
-                dlg.Close();
-            };
+            ok.Click += (s, a) => CopySelectedAndClose();
             cancel.Click += (s, a) => { dlg.DialogResult = false; dlg.Close(); };
 
             var btnPanel = new System.Windows.Controls.StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
@@ -671,16 +661,7 @@ public partial class MainWindow : Window
             dlg.Content = panel;
 
             var result = dlg.ShowDialog();
-            if (result == true && listBox.SelectedItem is string selected)
-            {
-                int idx = 0;
-                var end = selected.IndexOf(' ', idx);
-                var token = end > idx ? selected.Substring(idx,end) : selected.Substring(idx);
-                token = token.Trim();
-                Clipboard.SetText(token);
-                Vm.Error = "Selected tunnel copied to clipboard.";
-            }
-            else
+            if (result != true)
             {
                 Vm.Error = "Selection cancelled or no item selected.";
             }
