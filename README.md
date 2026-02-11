@@ -5,7 +5,7 @@
 - Generate a ngrok.yml with the app.
 - Noramlly leave the path as default so ngrok can easily find it.
 - And normally leave the network 192.168.0.0 as local as default
-- You will need your authtoken, generated as part of the setup.
+- You will need your authtoken, generated as part of the ngrok setup.
 - For ngrok setup see [Softata: ngrok update](https://davidjones.sportronics.com.au/softata/Softata-ngrok_update-softata.html)
   - An update page coming specifically for this
   
